@@ -1,19 +1,16 @@
-from flask import request, jsonify, make_response
+from flask import request
 from src.Application.Service.user_service import UserService
 
-class UserController:
-    @staticmethod
-    def register_user():
-        data = request.get_json()
-        name = data.get('name')
-        email = data.get('email')
-        password = data.get('password')
+service = UserService()
 
-        if not name or not email or not password:
-            return make_response(jsonify({"erro": "Missing required fields"}), 400)
+def register():
+    data = request.json
+    return service.register_user(data)
 
-        user = UserService.create_user(name, email, password)
-        return make_response(jsonify({
-            "mensagem": "User salvo com sucesso",
-            "usuarios": user.to_dict()
-        }), 200)
+def activate():
+    data = request.json
+    return service.activate_user(data['email'], data['code'])
+
+def login():
+    data = request.json
+    return service.login(data)

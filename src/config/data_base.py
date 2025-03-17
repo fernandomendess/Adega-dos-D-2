@@ -1,12 +1,22 @@
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+import os
 
-db = SQLAlchemy()
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
-def init_db(app):
-    """
-    Inicializa a base de dados com o app Flask e o SQLAlchemy.
-    """
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@mysql57:3306/market_management'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
+# ==== src/Domain/user.py ====
+from sqlalchemy import Column, Integer, String
+from src.config.data_base import Base
 
+class UserModel(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String)
+    cnpj = Column(String)
+    email = Column(String, unique=True)
+    celular = Column(String)
+    senha = Column(String)
+    status = Column(String, default="Inativo")
