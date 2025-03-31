@@ -1,15 +1,24 @@
-from src.config.data_base import db 
-class User(db.Model):
-    __tablename__ = 'users'
+from src.config.data_base import db
+
+class Seller(db.Model):
+    __tablename__ = 'sellers'
+    
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    nome = db.Column(db.String(255), nullable=False)
+    cnpj = db.Column(db.String(20), nullable=False, unique=True)
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    celular = db.Column(db.String(20), nullable=False)
+    senha = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Inativo')
+    activation_code = db.Column(db.String(4), nullable=False)
 
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
+            "nome": self.nome,
+            "cnpj": self.cnpj,
             "email": self.email,
-            "password": self.password
+            "celular": self.celular,
+            "status": self.status,
+            "activation_code": self.activation_code
         }

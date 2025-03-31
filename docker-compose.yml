@@ -1,25 +1,35 @@
-version: '3'
+version: '3.8'
 services:
   mysql57:
     image: mysql:8.0.29
-    restart: unless-stopped
     container_name: db
     ports:
-      - "127.0.0.1:3306:3306"
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: market_management
     volumes:
-      - .db:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
   web:
-    build:
-      context: . 
-      dockerfile: Dockerfile
+    build: .
     ports:
       - "5000:5000"
     volumes:
       - .:/src
     environment:
-      FLASK_APP: run.py
-      FLASK_ENV: development
+      - FLASK_APP=run.py
+      - FLASK_ENV=production #alteração aqui
+    depends_on:
+      mysql57:
+        condition: service_healthy
+    env_file:
+      - .env
+
+volumes:
+  mysql_data:

@@ -1,22 +1,28 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from flask_sqlalchemy import SQLAlchemy
 import os
+from dotenv import load_dotenv
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+load_dotenv()
 
-# ==== src/Domain/user.py ====
-from sqlalchemy import Column, Integer, String
-from src.config.data_base import Base
+db = SQLAlchemy()
 
-class UserModel(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String)
-    cnpj = Column(String)
-    email = Column(String, unique=True)
-    celular = Column(String)
-    senha = Column(String)
-    status = Column(String, default="Inativo")
+def init_db(app):
+    """Inicializa o banco com configurações robustas"""
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+mysqlconnector://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}"
+        f"@{os.getenv('MYSQL_HOST')}:3306/{os.getenv('MYSQL_DATABASE')}"
+    )
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 3600,
+        'pool_size': 10,
+        'max_overflow': 20
+    }
+    
+    db.init_app(app)
+    
+    with app.app_context():
+        # Garante que as tabelas existam
+        db.create_all()
+        print("✅ Banco de dados inicializado e tabelas verificadas")

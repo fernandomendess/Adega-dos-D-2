@@ -1,29 +1,31 @@
 from flask import Flask
-from flask_jwt_extended import JWTManager
-from flask_cors import CORS
-from src.routes import user_bp
-from dotenv import load_dotenv
+from src.config.data_base import init_db
+from src.routes import init_routes
+import time
 import os
+from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
-app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY")
-jwt = JWTManager(app)
-
-app.register_blueprint(user_bp)
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-# ==== src/routes.py ====
-from flask import Blueprint
-from src.Application.Controllers import user_controller
-
-user_bp = Blueprint('user', __name__)
-
-user_bp.route('/register', methods=['POST'])(user_controller.register)
-user_bp.route('/activate', methods=['POST'])(user_controller.activate)
-user_bp.route('/login', methods=['POST'])(user_controller.login)
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     
+    # Tentativa de conexão com o MySQL
+    for i in range(5):
+        try:
+            init_db(app)
+            break
+        except Exception as e:
+            if i == 4:
+                raise RuntimeError(f"Falha ao conectar ao MySQL após 5 tentativas: {str(e)}")
+            print(f"⚠️ Tentativa {i+1}/5 - MySQL não disponível, aguardando...")
+            time.sleep(5)
+    
+    init_routes(app)
+    return app
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True)
