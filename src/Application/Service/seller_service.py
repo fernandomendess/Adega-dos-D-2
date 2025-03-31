@@ -4,7 +4,7 @@ import os
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from werkzeug.security import generate_password_hash
-from src.Infrastructure.Model.seller import Seller
+from src.Infrastructure.Model import Seller
 from src.config.data_base import db
 
 # Configuração de logging
