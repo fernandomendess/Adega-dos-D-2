@@ -4,10 +4,9 @@ class SellerService:
     @staticmethod
     def create_seller(nome, cnpj, email, celular, senha):
         try:
-            # (mesmo código de validação...)
 
             activation_code = str(random.randint(1000, 9999))
-            print(f"\nCÓDIGO GERADO (DEV): {activation_code}\n")  # Apenas em dev
+            print(f"\nCÓDIGO GERADO (DEV): {activation_code}\n") 
 
             new_seller = Seller(
                 nome=nome,
@@ -54,7 +53,6 @@ class SellerService:
             seller.activation_code = None  # Remove código após ativação
             db.session.commit()
 
-            # Mensagem de confirmação
             if os.getenv('FLASK_ENV') == 'production':
                 WhatsAppService.send_message(celular, "Sua conta foi ativada com sucesso!")
 

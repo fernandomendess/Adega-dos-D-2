@@ -1,8 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
 from flask import Flask
 from src.config.data_base import init_db
 from src.routes import init_routes
 import time
-import os
 from dotenv import load_dotenv
 
 load_dotenv()

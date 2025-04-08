@@ -41,7 +41,6 @@ class SellerController:
 
             seller = SellerService.activate_seller(celular, codigo)
 
-            # ✅ Verifica se realmente é um objeto Seller antes de chamar to_dict()
             if not isinstance(seller, Seller):
                 return {"erro": "Código inválido ou seller não encontrado"}
 
