@@ -1,28 +1,23 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+# Configurações da aplicação
+app = Flask(__name__)
+app.config['HOST'] = '0.0.0.0'
+app.config['PORT'] = 8000
+app.config['DEBUG'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app_mercado.db'  
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Inicialize o SQLAlchemy sem passar o app diretamente
 db = SQLAlchemy()
 
 def init_db(app):
-    """Inicializa o banco com configurações robustas"""
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        f"mysql+mysqlconnector://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}"
-        f"@{os.getenv('MYSQL_HOST')}:3306/{os.getenv('MYSQL_DATABASE')}"
-    )
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_pre_ping': True,
-        'pool_recycle': 3600,
-        'pool_size': 10,
-        'max_overflow': 20
-    }
-    
-    db.init_app(app)
-    
+    """
+    Inicializa a base de dados com o app Flask e o SQLAlchemy.
+    """
+    db.init_app(app)  # Associa o banco de dados ao app Flask
     with app.app_context():
-        # Garante que as tabelas existam
-        db.create_all()
-        print("✅ Banco de dados inicializado e tabelas verificadas")
+        db.create_all()  # Cria as tabelas no banco de dados
+
+    

@@ -1,34 +1,13 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
-
 from flask import Flask
-from src.config.data_base import init_db
+from flask_jwt_extended import JWTManager
 from src.routes import init_routes
-import time
-from dotenv import load_dotenv
+from src.config.data_base import app, init_db, db
 
-load_dotenv()
+app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Substitua por uma chave secreta segura
+jwt = JWTManager(app)
 
-def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-    
-    # Tentativa de conexão com o MySQL
-    for i in range(5):
-        try:
-            init_db(app)
-            break
-        except Exception as e:
-            if i == 4:
-                raise RuntimeError(f"Falha ao conectar ao MySQL após 5 tentativas: {str(e)}")
-            print(f"⚠️ Tentativa {i+1}/5 - MySQL não disponível, aguardando...")
-            time.sleep(5)
-    
-    init_routes(app)
-    return app
-
-app = create_app()
+init_routes(app)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    init_db(app)  # Passa o app para inicializar o banco de dados
+    app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])

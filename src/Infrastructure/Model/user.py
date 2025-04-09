@@ -1,24 +1,25 @@
 from src.config.data_base import db
 
-class Seller(db.Model):
-    __tablename__ = 'sellers'
-    
+class User(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(255), nullable=False)
-    cnpj = db.Column(db.String(20), nullable=False, unique=True)
-    email = db.Column(db.String(255), nullable=False, unique=True)
-    celular = db.Column(db.String(20), nullable=False)
-    senha = db.Column(db.String(255), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='Inativo')
-    activation_code = db.Column(db.String(4), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    cnpj = db.Column(db.String(14), unique=True, nullable=True)
+    phone = db.Column(db.String(15), nullable=True)
+    status = db.Column(db.String(10), nullable=True, default="Inativo")
+    verification_code = db.Column(db.String(4), nullable=True)
 
+    
     def to_dict(self):
         return {
             "id": self.id,
-            "nome": self.nome,
-            "cnpj": self.cnpj,
+            "name": self.name,
             "email": self.email,
-            "celular": self.celular,
+            "password": self.password,
+            "cnpj": self.cnpj,
+            "phone": self.phone,
             "status": self.status,
-            "activation_code": self.activation_code
+            "verification_code": self.verification_code
         }
