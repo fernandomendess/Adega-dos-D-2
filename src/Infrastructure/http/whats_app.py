@@ -2,10 +2,13 @@ from twilio.rest import Client
 from twilio.http.http_client import TwilioHttpClient
 import random
 import datetime
+import os
 
 # SID e Auth Token do Twilio (sandbox)
-account_sid = 'ACe16c5c13b0a8e96c4e0202f980247fb0'
-auth_token = '6c6ec72a24e836f299cb9c34b250f2b9'
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+#account_sid = 'ACe16c5c13b0a8e96c4e0202f980247fb0'
+#auth_token = '6c6ec72a24e836f299cb9c34b250f2b9'
 
 # ⚠️ Ignora a verificação do certificado SSL (não recomendado para produção)
 proxy_client = TwilioHttpClient()
