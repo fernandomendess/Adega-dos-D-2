@@ -22,16 +22,21 @@ def init_routes(app):
     @app.route('/api/auth/login', methods=['POST'])
     def login():
         email = request.json.get('email', None)
-        password = request.json.get('password', None)
+        senha = request.json.get('senha', None)  # Corrigido para usar 'senha'
 
         # Verifique as credenciais do usuário
         user = User.query.filter_by(email=email).first()
-        if user and user.password == password:  # Em produção, use hashing para senhas
+        if user and user.password == senha:  # Em produção, use hashing para senhas
             # Use o e-mail como identity (string) e adicione claims extras, se necessário
             access_token = create_access_token(
                 identity=email,  # O identity agora é uma string
                 additional_claims={"name": user.name, "status": user.status}
             )
+
+            # Decodifique o token se ele for do tipo bytes
+            if isinstance(access_token, bytes):
+                access_token = access_token.decode('utf-8')
+
             return jsonify(access_token=access_token), 200
 
         return jsonify({"mensagem": "Credenciais inválidas"}), 401
